@@ -106,23 +106,35 @@
 >
 > So, if your runtime exceeds the max time listed, try rerunning and check the `step` logs in case it's a platform issue.
 
-------
-> [!WARNING]  
-> Some devices have issues with `lz4kd`. Fix in progress. **If the build fails, please do not enable `ZRAM` compression**, and back up your `boot.img` in advance.
 
 ------
-> [!CAUTION]  
-> **Do not install modules when performing a root-preserving update!**
-
-> [!TIP]  
-> Remember to press **Volume Down** when installing modules!
+> [!CAUTION]
+> Do **NOT** install modules during **root-preserving updates**!
+>
+> Remember to press **Volume Down** when installing the module!
+>
+> If your device is **`sm8750`**, and you previously used the official script to build,
+> but now want to use **`Fast Build`**, please **restore** the following images first:
+> `dtbo.img`, `system_dlkm.erofs.img`, `vendor_dlkm.img`, and `vendor_boot.img`,
+> **otherwise the device may fail to boot!**
+>
+> If you have enabled the **`ZRAM`** algorithm, make sure to install the ZRAM module
+> **before rebooting** after flashing with `Anykernel3`. You may need to adjust some parameters manually.
+> Note: The **5.10 kernel does NOT support `ZRAM`**, as the `zram.ko` module path could not be found.
+>
+> We've noticed that some **`sm8650`** devices fail to boot after updating to **830** due to kernel version changes.
+> Please wait for upstream sources to be updated.
 
  
 ------
  
 # Changelog
---Fix the problem that the official script cannot run when the kernel version is between `5.15.0-5.15.123`, and the result of the quick compilation has problems. [@zzh20188](https://github.com/zzh20188)  
---Support `BBR`, not enabled by default.  
+-- Support enabling WindChill driver for selected devices (optional), driver from [@HanKuCha](https://github.com/HanKuCha).  
+-- Remove all device-related parameters from `input` except the device config file `FEIL`, and propagate to `feil-map` to support more options.  
+-- When `ZRAM` is enabled, automatically download and modify the ZRAM additional module, module from [@FURLC](https://github.com/FURLC).  
+-- Fix issues where `ZRAM` is unusable or unable to launch non-system apps.  
+-- Fix the problem that the official script cannot run when the kernel version is between `5.15.0-5.15.123`, and the result of the quick compilation has problems. [@zzh20188](https://github.com/zzh20188)  
+-- Support for `TCP congestion control algorithm (BBR)`.  
 -- Allow custom kernel suffix.  <- **`beta`**
 ```
 1. When the custom kernel suffix is empty, a random string is used instead of the default “x.xx.xxx-androidxx-8-o-g3b1e97b8b29f”
@@ -132,18 +144,17 @@
 -- Support ultra-fast builds for some models `(currently supports 5.10, 5.15, 6.1, 6.6)`  
 -- Fixed OnePlus Ace5Pro and OnePlus 13 boot issues after build failure; using official dtbo now allows booting directly. [@reigadegr](https://github.com/reigadegr)  
 -- Support displaying user-defined inputs during `Show selected inputs debug` step; workflow name will also reflect some values.  
--- Removed potential version codes from the suffix of `ak3.zip` config file, replaced with exact `Android` version numbers `XX.X.X`.
+-- Removed potential version codes from the suffix of `Anykernel3.zip` config file, replaced with exact `Android` version numbers `XX.X.X`.
 ```
 Examples:
 AnyKernel3_SukiSUUltra_12896_oneplus_ace2pro_Android15.0.0_KPM_VFS.zip  
 AnyKernel3_SukiSUUltra_12896_oneplus_13_Android15.0.2_KPM_VFS.zip  
 AnyKernel3_SukiSUUltra_12896_oneplus_11_Android14.1.0_KPM_VFS.zip
 ```  
--- KPM is enabled by default and can no longer be disabled.  
 -- New `dir4` and `dir5` paths added to support `sm8750` and some devices with new paths when ZRAM is enabled (such as `ace2p`, `13T`).   [@ShirkNeko](https://github.com/ShirkNeko)  
 -- Added support for the `LZ4K` compression algorithm in the `zram` module.   [@ShirkNeko](https://github.com/ShirkNeko)  
 -- Synchronized changes with the upstream download channel for the `susfs` module to fix download issues.  
 -- Optimized the build scheme for `sm8750` and `sm7675`.  
 -- New `dir3` path added to support `sm8475` (such as `ace2`).  
 -- Support automatic download of latest `CI` version of `susfs` module and install via `ksud`; also automatically extracts manager `CI-APK` but does not install it.  
--- Supports `KPM` (copy without modifications) and `VFS HOOK` (optional).  
+-- Supports `KPM` (copy without modifications;optional) and `VFS HOOK` (optional).  
